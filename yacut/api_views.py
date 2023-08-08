@@ -12,7 +12,7 @@ from .utils import check_symbols, get_unique_short_url
 def add_url():
     data = request.get_json()
 
-    if data is None:
+    if data is None or not data:
         raise InvalidAPIUsage('Отсутствует тело запроса')
 
     if 'url' not in data:
@@ -23,10 +23,13 @@ def add_url():
 
     custom_id = data['custom_id']
     if len(custom_id) > 16 or not check_symbols(custom_id):
-        raise InvalidAPIUsage('Указано недопустимое имя для короткой ссылки', HTTPStatus.BAD_REQUEST)
+        raise InvalidAPIUsage(
+            'Указано недопустимое имя для короткой ссылки',
+            HTTPStatus.BAD_REQUEST
+        )
 
     if check_inique_short_url(custom_id):
-        raise InvalidAPIUsage((f'Имя "{custom_id}" уже занято.'), HTTPStatus.BAD_REQUEST)
+        raise InvalidAPIUsage(f'Имя "{custom_id}" уже занято.', HTTPStatus.BAD_REQUEST)
 
     url = URLMap()
     url.from_dict(data)
